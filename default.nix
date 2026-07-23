@@ -24,6 +24,7 @@ stdenv.mkDerivation rec {
     libxscrnsaver libxcomposite libxdamage libxext
     libxfixes libxi libxrandr libxcb
     zlib stdenv.cc.cc.lib alsa-lib libpulseaudio
+    libgbm
   ];
 
   unpackPhase = ''
