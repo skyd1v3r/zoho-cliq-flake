@@ -2,6 +2,7 @@
 , nspr, nss, gtk3, glib, libX11, libxkbcommon, xorg
 , zlib, alsa-lib, libpulseaudio
 , makeWrapper
+, lib
 }:
 
 stdenv.mkDerivation rec {
@@ -19,7 +20,7 @@ stdenv.mkDerivation rec {
     nspr nss gtk3 glib libX11 libxkbcommon
     xorg.libXScrnSaver xorg.libXcomposite xorg.libXdamage xorg.libXext
     xorg.libXfixes xorg.libXi xorg.libXrandr xorg.libxcb
-    zlib alsa-lib libpulseaudio
+    zlib stdenv.cc.cc.lib alsa-lib libpulseaudio
   ];
 
   unpackPhase = ''
@@ -32,7 +33,6 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/cliq
     cp $out/bin/resources/app/app/images/appicon.png \
        $out/share/icons/hicolor/256x256/apps/zoho-cliq.png
-
     cat > $out/share/applications/zoho-cliq.desktop <<EOF
     [Desktop Entry]
     Name=Zoho Cliq
@@ -42,9 +42,8 @@ stdenv.mkDerivation rec {
     Type=Application
     Categories=Network;InstantMessaging;
     EOF
-
     makeWrapper $out/bin/cliq $out/bin/.cliq-wrapper \
-      --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath buildInputs}
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs}
   '';
 
   postFixup = ''
@@ -54,7 +53,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Zoho Cliq Desktop Client";
     homepage = "https://www.zoho.com/cliq/";
-    license = stdenv.lib.licenses.unfree;
+    license = lib.licenses.unfree;
     platforms = [ "x86_64-linux" ];
+    maintainers = [ ];
   };
 }
