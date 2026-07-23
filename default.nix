@@ -1,5 +1,7 @@
 { stdenv, dpkg, autoPatchelfHook, fetchurl
-, nspr, nss, gtk3, glib, libX11, libxkbcommon, xorg
+, nspr, nss, gtk3, glib, libX11, libxkbcommon
+, libxscrnsaver, libxcomposite, libxdamage, libxext
+, libxfixes, libxi, libxrandr, libxcb
 , zlib, alsa-lib, libpulseaudio
 , makeWrapper
 , lib
@@ -11,15 +13,15 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://downloads.zohocdn.com/chat-desktop/linux/cliq_${version}_amd64.deb";
-    hash = "sha256-54eed5a772f68320f3906bec5920e3a19da904abdace10f985b87859015eef89";
+    hash = lib.fakeSha256; # или конкретный хеш после вычисления
   };
 
   nativeBuildInputs = [ dpkg autoPatchelfHook makeWrapper ];
 
   buildInputs = [
     nspr nss gtk3 glib libX11 libxkbcommon
-    xorg.libXScrnSaver xorg.libXcomposite xorg.libXdamage xorg.libXext
-    xorg.libXfixes xorg.libXi xorg.libXrandr xorg.libxcb
+    libxscrnsaver libxcomposite libxdamage libxext
+    libxfixes libxi libxrandr libxcb
     zlib stdenv.cc.cc.lib alsa-lib libpulseaudio
   ];
 
