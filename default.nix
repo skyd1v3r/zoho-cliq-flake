@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://downloads.zohocdn.com/chat-desktop/linux/cliq_${version}_amd64.deb";
-    hash = "sha256-0ra4bwcdw2zancya3kxmwkn4dh6r5gf13nvmn7rgax30jwhffy7m";
+    hash = "sha256-9XjnIJdgdPXysXXbEdwr2cBG7OS1z6E8s+oL3hhfRGU=";
   };
 
   nativeBuildInputs = [ dpkg autoPatchelfHook makeWrapper ];
@@ -30,23 +30,27 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir -p $out/bin $out/share/applications $out/share/icons/hicolor/256x256/apps
-    cp -r opt/Cliq/* $out/bin/
-    chmod +x $out/bin/cliq
-    cp $out/bin/resources/app/app/images/appicon.png \
-       $out/share/icons/hicolor/256x256/apps/zoho-cliq.png
-    cat > $out/share/applications/zoho-cliq.desktop <<EOF
-    [Desktop Entry]
-    Name=Zoho Cliq
-    Comment=Zoho Cliq Desktop Client
-    Exec=$out/bin/cliq
-    Icon=zoho-cliq
-    Type=Application
-    Categories=Network;InstantMessaging;
-    EOF
-    makeWrapper $out/bin/cliq $out/bin/.cliq-wrapper \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs}
-  '';
+      mkdir -p $out/bin $out/share/applications
+      cp -r opt/Cliq/* $out/bin/
+      chmod +x $out/bin/cliq
+  
+      # Копируем иконки из стандартной папки
+      cp -r usr/share/icons $out/share/
+  
+      # Создаём .desktop файл
+      cat > $out/share/applications/zoho-cliq.desktop <<EOF
+      [Desktop Entry]
+      Name=Zoho Cliq
+      Comment=Zoho Cliq Desktop Client
+      Exec=$out/bin/cliq
+      Icon=cliq
+      Type=Application
+      Categories=Network;InstantMessaging;
+      EOF
+  
+      makeWrapper $out/bin/cliq $out/bin/.cliq-wrapper \
+        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs}
+    '';
 
   postFixup = ''
     mv $out/bin/.cliq-wrapper $out/bin/cliq
