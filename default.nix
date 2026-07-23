@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://downloads.zohocdn.com/chat-desktop/linux/cliq_${version}_amd64.deb";
-    hash = "sha256-0ra4bwcdw2zancya3kxmwkn4dh6r5gf13nvmn7rgax30jwhffy7m"
+    hash = "sha256-0ra4bwcdw2zancya3kxmwkn4dh6r5gf13nvmn7rgax30jwhffy7m";
   };
 
   nativeBuildInputs = [ dpkg autoPatchelfHook makeWrapper ];
