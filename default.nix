@@ -5,6 +5,7 @@
 , zlib, alsa-lib, libpulseaudio
 , makeWrapper
 , lib
+, bash
 }:
 
 stdenv.mkDerivation rec {
@@ -30,30 +31,28 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-      mkdir -p $out/bin $out/share/applications
-      cp -r opt/Cliq/* $out/bin/
-      chmod +x $out/bin/cliq
-  
-      # Копируем иконки из стандартной папки
-      cp -r usr/share/icons $out/share/
-  
-      # Создаём .desktop файл
-      cat > $out/share/applications/zoho-cliq.desktop <<EOF
-      [Desktop Entry]
-      Name=Zoho Cliq
-      Comment=Zoho Cliq Desktop Client
-      Exec=$out/bin/cliq
-      Icon=cliq
-      Type=Application
-      Categories=Network;InstantMessaging;
-      EOF
-  
-      makeWrapper $out/bin/cliq $out/bin/.cliq-wrapper \
-        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs}
-    '';
+    mkdir -p $out/bin $out/share/applications
+    cp -r opt/Cliq/* $out/bin/
+    chmod +x $out/bin/cliq
 
-  postFixup = ''
-    mv $out/bin/.cliq-wrapper $out/bin/cliq
+    # Копируем иконки
+    cp -r usr/share/icons $out/share/
+
+    # Создаём обёртку, которая запускает скрипт cliq с правильным LD_LIBRARY_PATH
+    makeWrapper ${bash}/bin/bash $out/bin/zoho-cliq \
+      --add-flags "$out/bin/cliq" \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs}
+
+    # Создаём .desktop файл
+    cat > $out/share/applications/zoho-cliq.desktop <<EOF
+    [Desktop Entry]
+    Name=Zoho Cliq
+    Comment=Zoho Cliq Desktop Client
+    Exec=$out/bin/zoho-cliq
+    Icon=cliq
+    Type=Application
+    Categories=Network;InstantMessaging;
+    EOF
   '';
 
   meta = {
