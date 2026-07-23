@@ -44,13 +44,14 @@ stdenv.mkDerivation rec {
   
     # Создаём обёртку вручную (скрипт)
     cat > $out/bin/zoho-cliq <<EOF
-  #!/nix/store/34dkjp1wxxh6djsvxk8nhvzp0izasds0-glibc-2.42-67/bin/bash
+  #!/run/current-system/sw/bin/bash
   export LD_LIBRARY_PATH=${lib.makeLibraryPath buildInputs}:$out/bin
   exec $out/bin/cliq "\$@"
   EOF
     chmod +x $out/bin/zoho-cliq
   
     # .desktop файл
+    mkdir -p $out/share/applications
     cat > $out/share/applications/zoho-cliq.desktop <<EOF
     [Desktop Entry]
     Name=Zoho Cliq
