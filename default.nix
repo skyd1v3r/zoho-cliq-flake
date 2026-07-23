@@ -36,31 +36,30 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/bin $out/share/applications $out/share/icons/hicolor/256x256/apps
-  
+
     cp -r opt/Cliq/* $out/bin/
     chmod +x $out/bin/cliq
-  
+
     cp -r usr/share/icons/* $out/share/icons/
-  
-    # Создаём обёртку вручную (скрипт)
+
+    # Обёртка для запуска
     cat > $out/bin/zoho-cliq <<EOF
-  #!/run/current-system/sw/bin/bash
-  export LD_LIBRARY_PATH=${lib.makeLibraryPath buildInputs}:$out/bin
-  exec $out/bin/cliq "\$@"
-  EOF
+#!/run/current-system/sw/bin/bash
+export LD_LIBRARY_PATH=${lib.makeLibraryPath buildInputs}:$out/bin
+exec $out/bin/cliq "\$@"
+EOF
     chmod +x $out/bin/zoho-cliq
-  
+
     # .desktop файл
-    mkdir -p $out/share/applications
     cat > $out/share/applications/zoho-cliq.desktop <<EOF
-    [Desktop Entry]
-    Name=Zoho Cliq
-    Comment=Zoho Cliq Desktop Client
-    Exec=$out/bin/zoho-cliq
-    Icon=cliq
-    Type=Application
-    Categories=Network;InstantMessaging;
-    EOF
+[Desktop Entry]
+Name=Zoho Cliq
+Comment=Zoho Cliq Desktop Client
+Exec=$out/bin/zoho-cliq
+Icon=cliq
+Type=Application
+Categories=Network;InstantMessaging;
+EOF
   '';
 
   meta = {
