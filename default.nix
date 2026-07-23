@@ -6,6 +6,7 @@
 , makeWrapper
 , lib
 , bash
+, libgbm
 }:
 
 stdenv.mkDerivation rec {
