@@ -35,27 +35,21 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    # Базовые директории
     mkdir -p $out/bin $out/share/applications $out/share/icons/hicolor/256x256/apps
-
-    # Копируем бинарники и ресурсы
+  
     cp -r opt/Cliq/* $out/bin/
     chmod +x $out/bin/cliq
-
-    # Копируем иконки из .deb
+  
     cp -r usr/share/icons/* $out/share/icons/
-
-    # Создаём обёртку для запуска через bash с LD_LIBRARY_PATH
-    makeWrapper ${bash}/bin/bash $out/bin/zoho-cliq \
-      --add-flags "$out/bin/cliq" \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs} \
-      --set NIXOS_OZONE_WL 1 \
-      --set QT_QPA_PLATFORM wayland \
-      --set ELECTRON_ENABLE_GPU 1
-
-    # Симлинк для удобства
-    ln -s $out/bin/zoho-cliq $out/bin/cliq-wrapper
-
+  
+    # Создаём обёртку вручную (скрипт)
+    cat > $out/bin/zoho-cliq <<EOF
+  #!/nix/store/34dkjp1wxxh6djsvxk8nhvzp0izasds0-glibc-2.42-67/bin/bash
+  export LD_LIBRARY_PATH=${lib.makeLibraryPath buildInputs}:$out/bin
+  exec $out/bin/cliq "\$@"
+  EOF
+    chmod +x $out/bin/zoho-cliq
+  
     # .desktop файл
     cat > $out/share/applications/zoho-cliq.desktop <<EOF
     [Desktop Entry]
