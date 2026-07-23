@@ -6,10 +6,12 @@
   outputs = { self, nixpkgs }: let
     pkgs = import nixpkgs {
       system = "x86_64-linux";
-      config.allowUnfree = true; # Разрешаем установку unfree пакетов
+      config.allowUnfree = true;
     };
   in {
-    packages.x86_64-linux.zoho-cliq = pkgs.callPackage ./default.nix { };
-    defaultPackage.x86_64-linux = self.packages.x86_64-linux.zoho-cliq;
+    packages.x86_64-linux = {
+      zoho-cliq = pkgs.callPackage ./default.nix { };
+      default = self.packages.x86_64-linux.zoho-cliq;
+    };
   };
 }
